@@ -228,6 +228,7 @@ function ReasonCard({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const PAGE_SIZE = 12;
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Reason[]>([]);
   const [total, setTotal] = useState(0);
@@ -242,6 +243,9 @@ export default function Home() {
   // Use a ref so the IntersectionObserver callback always reads the latest
   // loading value without needing to be re-created when loading changes.
   const loadingRef = useRef(false);
+  const pageRef = useRef(1);
+  const totalPagesRef = useRef(1);
+  const canLoadMoreRef = useRef(true);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const [element, setElement] = useState<Element>("air");
@@ -252,8 +256,9 @@ export default function Home() {
   const [voteLoading, setVoteLoading] = useState(false);
   const [votesReady, setVotesReady] = useState(false);
   const totalVotes = aangVotes + korraVotes;
-  const aangPct = Math.round((aangVotes / totalVotes) * 100);
-  const korraPct = 100 - aangPct;
+  const hasVotes = totalVotes > 0;
+  const aangPct = hasVotes ? Math.round((aangVotes / totalVotes) * 100) : 50;
+  const korraPct = hasVotes ? 100 - aangPct : 50;
 
   const { scrollYProgress } = useScroll();
   const progressScale = useSpring(scrollYProgress, {
@@ -264,16 +269,24 @@ export default function Home() {
 
   const filterQuery = useMemo(() => {
     const params = new URLSearchParams();
-    params.set("limit", "12");
+    params.set("limit", String(PAGE_SIZE));
     if (category !== "all") params.set("category", category);
     if (q.trim()) params.set("q", q.trim());
     return params.toString();
-  }, [category, q]);
+  }, [category, q, PAGE_SIZE]);
 
   // Keep loadingRef in sync so observer doesn't need loading in its dep array
   useEffect(() => {
     loadingRef.current = loading;
   }, [loading]);
+
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+
+  useEffect(() => {
+    totalPagesRef.current = totalPages;
+  }, [totalPages]);
 
   // Fetch reasons
   useEffect(() => {
@@ -281,6 +294,7 @@ export default function Home() {
 
     async function loadReasons() {
       setLoading(true);
+      loadingRef.current = true;
       setError(null);
       try {
         const res = await fetch(`/api/reasons?page=${page}&${filterQuery}`, {
@@ -298,13 +312,26 @@ export default function Home() {
         if (controller.signal.aborted) return;
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          loadingRef.current = false;
+          canLoadMoreRef.current = true;
+        }
       }
     }
 
     void loadReasons();
     return () => controller.abort();
   }, [page, filterQuery]);
+
+  const requestNextPage = useCallback(() => {
+    if (loadingRef.current) return;
+    if (!canLoadMoreRef.current) return;
+    if (pageRef.current >= totalPagesRef.current) return;
+
+    canLoadMoreRef.current = false;
+    setPage((p) => p + 1);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -330,31 +357,34 @@ export default function Home() {
     };
   }, []);
 
-  // Infinite scroll — only depends on totalPages so observer is stable
+  // Infinite scroll observer.
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && !loadingRef.current) {
-          setPage((p) => {
-            // read latest totalPages from closure via state setter; bail if done
-            let next = p;
-            setTotalPages((tp) => {
-              if (p < tp) next = p + 1;
-              return tp;
-            });
-            return next;
-          });
-        }
+        if (entries[0]?.isIntersecting) requestNextPage();
       },
-      { rootMargin: "0px 0px 200px 0px", threshold: 0 }
+      { rootMargin: "0px 0px 500px 0px", threshold: 0 }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, []); // intentionally empty — loadingRef & setTotalPages are stable refs
+  }, [requestNextPage]);
+
+  // Fallback trigger for edge cases where observer can miss.
+  useEffect(() => {
+    function onScroll() {
+      const scrollBottom =
+        document.documentElement.scrollHeight -
+        (window.innerHeight + window.scrollY);
+      if (scrollBottom < 260) requestNextPage();
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [requestNextPage]);
 
   async function fetchRandomReason() {
     try {
