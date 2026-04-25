@@ -21,6 +21,13 @@ type ReasonsResponse = {
   items: Reason[];
 };
 
+type VoteResponse = {
+  id: number;
+  aangVotes: number;
+  korraVotes: number;
+  updatedAt: string;
+};
+
 // ─── Element Themes ───────────────────────────────────────────────────────────
 
 const ELEMENTS = ["air", "water", "fire", "earth"] as const;
@@ -240,8 +247,10 @@ export default function Home() {
   const [element, setElement] = useState<Element>("air");
   const theme = ELEMENT_META[element];
 
-  const [aangVotes, setAangVotes] = useState(720);
-  const [korraVotes, setKorraVotes] = useState(280);
+  const [aangVotes, setAangVotes] = useState(0);
+  const [korraVotes, setKorraVotes] = useState(0);
+  const [voteLoading, setVoteLoading] = useState(false);
+  const [votesReady, setVotesReady] = useState(false);
   const totalVotes = aangVotes + korraVotes;
   const aangPct = Math.round((aangVotes / totalVotes) * 100);
   const korraPct = 100 - aangPct;
@@ -296,6 +305,30 @@ export default function Home() {
     void loadReasons();
     return () => controller.abort();
   }, [page, filterQuery]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadVotes() {
+      try {
+        const res = await fetch("/api/votes", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load vote tally");
+        const payload = (await res.json()) as VoteResponse;
+        if (!active) return;
+        setAangVotes(payload.aangVotes);
+        setKorraVotes(payload.korraVotes);
+        setVotesReady(true);
+      } catch (err) {
+        if (!active) return;
+        setError(err instanceof Error ? err.message : "Unknown error");
+      }
+    }
+
+    void loadVotes();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Infinite scroll — only depends on totalPages so observer is stable
   useEffect(() => {
@@ -460,10 +493,29 @@ export default function Home() {
           </p>
           <div className="mb-4 flex items-center justify-between gap-4">
             <motion.button
-              onClick={() => setAangVotes((v) => v + 1)}
+              onClick={async () => {
+                if (voteLoading) return;
+                setVoteLoading(true);
+                try {
+                  const res = await fetch("/api/votes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ side: "aang" }),
+                  });
+                  if (!res.ok) throw new Error("Vote failed");
+                  const payload = (await res.json()) as VoteResponse;
+                  setAangVotes(payload.aangVotes);
+                  setKorraVotes(payload.korraVotes);
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : "Unknown error");
+                } finally {
+                  setVoteLoading(false);
+                }
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.93 }}
-              className="vote-btn-aang flex-1 rounded-2xl px-4 py-3 text-sm font-black text-slate-950"
+              disabled={voteLoading || !votesReady}
+              className="vote-btn-aang flex-1 rounded-2xl px-4 py-3 text-sm font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
             >
               🌀 Aang
             </motion.button>
@@ -476,10 +528,29 @@ export default function Home() {
               <p className="text-[10px] text-white/30">{totalVotes} votes</p>
             </div>
             <motion.button
-              onClick={() => setKorraVotes((v) => v + 1)}
+              onClick={async () => {
+                if (voteLoading) return;
+                setVoteLoading(true);
+                try {
+                  const res = await fetch("/api/votes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ side: "korra" }),
+                  });
+                  if (!res.ok) throw new Error("Vote failed");
+                  const payload = (await res.json()) as VoteResponse;
+                  setAangVotes(payload.aangVotes);
+                  setKorraVotes(payload.korraVotes);
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : "Unknown error");
+                } finally {
+                  setVoteLoading(false);
+                }
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.93 }}
-              className="vote-btn-korra flex-1 rounded-2xl px-4 py-3 text-sm font-black text-slate-950"
+              disabled={voteLoading || !votesReady}
+              className="vote-btn-korra flex-1 rounded-2xl px-4 py-3 text-sm font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Korra 🔥
             </motion.button>

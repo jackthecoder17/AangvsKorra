@@ -18,3 +18,10 @@ model Reason {
   category  String
   createdAt DateTime @default(now())
 }
+
+model VoteTally {
+  id         Int      @id
+  aangVotes  Int      @default(0)
+  korraVotes Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}

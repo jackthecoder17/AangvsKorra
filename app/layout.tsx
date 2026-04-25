@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Aang vs Korra - 1000 Reasons",
-  description: "Avatar-themed Next.js app powered by a Prisma backend.",
+  description: "Avatar app sha",
 };
 
 export default function RootLayout({
