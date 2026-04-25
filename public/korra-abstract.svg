@@ -1,0 +1,12 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" fill="#1B0C1B"/>
+  <circle cx="915" cy="120" r="195" fill="#FB923C" fill-opacity="0.3"/>
+  <circle cx="220" cy="640" r="280" fill="#F472B6" fill-opacity="0.18"/>
+  <path d="M0 592C128 528 248 522 348 548C485 585 615 667 758 657C932 645 1051 531 1200 498V720H0V592Z" fill="#1E1B4B"/>
+  <path d="M393 354C465 265 584 217 692 231C806 247 904 327 929 426C943 478 933 535 900 572C857 620 787 631 716 625C571 613 404 552 348 453C325 412 350 382 393 354Z" fill="#FED7AA" fill-opacity="0.6"/>
+  <path d="M542 272C578 225 630 194 689 190C758 186 823 224 859 283C890 333 901 399 874 456C844 518 775 555 698 553C612 551 535 504 505 437C484 391 506 318 542 272Z" fill="#FAFAFA"/>
+  <path d="M691 187C664 164 630 152 592 157C546 163 506 199 501 248C495 300 530 342 580 350C612 356 646 347 673 326C711 297 722 236 691 187Z" fill="#FB923C"/>
+  <path d="M309 330C409 286 523 275 634 289C742 303 853 344 927 420" stroke="#FDBA74" stroke-width="16" stroke-linecap="round"/>
+  <path d="M284 439C384 491 504 515 625 503C741 490 851 442 944 378" stroke="#FB7185" stroke-width="12" stroke-linecap="round" stroke-dasharray="22 18"/>
+  <text x="76" y="654" fill="#FDBA74" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700">KORRA</text>
+</svg>

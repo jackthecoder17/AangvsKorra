@@ -1,0 +1,12 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" fill="#061226"/>
+  <circle cx="264" cy="136" r="182" fill="#0EA5E9" fill-opacity="0.28"/>
+  <circle cx="960" cy="620" r="260" fill="#38BDF8" fill-opacity="0.2"/>
+  <path d="M0 610C137 541 243 544 358 586C496 637 593 705 753 692C940 678 1015 542 1200 504V720H0V610Z" fill="#0F172A"/>
+  <path d="M216 389C289 312 375 247 486 248C589 249 701 310 756 386C788 430 801 484 780 522C753 570 700 590 644 598C530 614 392 600 304 541C241 499 176 434 216 389Z" fill="#93C5FD" fill-opacity="0.55"/>
+  <path d="M426 288C450 244 491 208 542 197C598 185 651 208 690 250C726 289 746 344 735 390C721 447 673 486 612 494C540 503 465 472 431 415C410 381 406 326 426 288Z" fill="#E2E8F0"/>
+  <path d="M596 196C573 173 543 160 510 163C465 168 431 202 431 246C431 290 462 325 508 330C538 333 568 321 589 300C621 269 623 224 596 196Z" fill="#0EA5E9"/>
+  <path d="M297 356C374 316 461 298 551 304C646 311 742 342 812 402" stroke="#BAE6FD" stroke-width="16" stroke-linecap="round"/>
+  <path d="M272 447C371 493 485 512 596 503C692 494 790 454 862 387" stroke="#7DD3FC" stroke-width="12" stroke-linecap="round" stroke-dasharray="24 20"/>
+  <text x="72" y="654" fill="#BAE6FD" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700">AANG</text>
+</svg>

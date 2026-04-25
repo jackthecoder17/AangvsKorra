@@ -12,15 +12,209 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: #020617;
+  color: #f1f5f9;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Arena base ──────────────────────────────────────────────────── */
+
+.arena-root {
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* ─── Background image overlay ───────────────────────────────────── */
+/* 3-layer overlay: opaque base + vignette + element tint */
+
+.bg-overlay {
+  background:
+    /* vignette towards edges */
+    radial-gradient(ellipse at center, transparent 30%, rgba(2, 6, 23, 0.75) 100%),
+    /* dark base so text stays readable */
+    linear-gradient(180deg, rgba(2, 6, 23, 0.55) 0%, rgba(2, 6, 23, 0.72) 60%, rgba(2, 6, 23, 0.88) 100%);
+}
+
+/* element-specific tint layers on top of bg-overlay */
+.element-air    .bg-overlay { background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.18), transparent 65%), radial-gradient(ellipse at center, transparent 30%, rgba(2,6,23,0.75) 100%), linear-gradient(180deg, rgba(2,6,23,0.52) 0%, rgba(2,6,23,0.7) 60%, rgba(2,6,23,0.88) 100%); }
+.element-water  .bg-overlay { background: radial-gradient(ellipse at center, rgba(45, 212, 191, 0.18), transparent 65%), radial-gradient(ellipse at center, transparent 30%, rgba(2,6,23,0.75) 100%), linear-gradient(180deg, rgba(2,6,23,0.52) 0%, rgba(2,6,23,0.7) 60%, rgba(2,6,23,0.88) 100%); }
+.element-fire   .bg-overlay { background: radial-gradient(ellipse at center, rgba(251, 146, 60, 0.2),  transparent 65%), radial-gradient(ellipse at center, transparent 30%, rgba(2,6,23,0.75) 100%), linear-gradient(180deg, rgba(2,6,23,0.52) 0%, rgba(2,6,23,0.7) 60%, rgba(2,6,23,0.88) 100%); }
+.element-earth  .bg-overlay { background: radial-gradient(ellipse at center, rgba(134, 239, 172, 0.18), transparent 65%), radial-gradient(ellipse at center, transparent 30%, rgba(2,6,23,0.75) 100%), linear-gradient(180deg, rgba(2,6,23,0.52) 0%, rgba(2,6,23,0.7) 60%, rgba(2,6,23,0.88) 100%); }
+
+/* subtle diagonal texture overlay */
+.arena-lights {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.012) 0 2px,
+    transparent 2px 18px
+  );
+}
+
+/* ─── Scroll meter ────────────────────────────────────────────────── */
+
+.scroll-meter {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 4px;
+  transform-origin: 0%;
+  background: linear-gradient(90deg, #22d3ee, #e879f9, #fb923c);
+}
+
+/* ─── Hero panel ──────────────────────────────────────────────────── */
+
+.arena-hero {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(
+    110deg,
+    rgba(8, 47, 73, 0.38),
+    rgba(15, 23, 42, 0.45) 35%,
+    rgba(88, 28, 135, 0.35) 70%,
+    rgba(124, 45, 18, 0.32)
+  );
+  box-shadow: 0 30px 110px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(14px);
+}
+
+/* ─── Arena cards (hero section) ─────────────────────────────────── */
+
+.arena-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.5), rgba(2, 6, 23, 0.6));
+  border-radius: 1rem;
+  padding: 0.75rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+/* ─── Controls bar ────────────────────────────────────────────────── */
+
+.arena-controls {
+  border-color: rgba(232, 121, 249, 0.22);
+  background: linear-gradient(
+    120deg,
+    rgba(8, 47, 73, 0.32),
+    rgba(88, 28, 135, 0.26),
+    rgba(124, 45, 18, 0.22)
+  );
+  backdrop-filter: blur(12px);
+}
+
+/* ─── Element switcher buttons ────────────────────────────────────── */
+
+.element-btn {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.element-btn:hover {
+  border-color: rgba(148, 163, 184, 0.55);
+  color: #f1f5f9;
+}
+
+.element-btn-active {
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+/* ─── Duel meter ──────────────────────────────────────────────────── */
+
+.arena-duel {
+  border-color: rgba(192, 132, 252, 0.22);
+  background: linear-gradient(
+    115deg,
+    rgba(8, 47, 73, 0.35) 0%,
+    rgba(15, 23, 42, 0.42) 50%,
+    rgba(124, 45, 18, 0.3) 100%
+  );
+  backdrop-filter: blur(12px);
+}
+
+.vote-btn-aang {
+  background: linear-gradient(135deg, #22d3ee, #60a5fa);
+  box-shadow: 0 4px 16px rgba(34, 211, 238, 0.35);
+}
+
+.vote-btn-korra {
+  background: linear-gradient(135deg, #fb923c, #f43f5e);
+  box-shadow: 0 4px 16px rgba(251, 146, 60, 0.35);
+}
+
+/* ─── Spotlight card ──────────────────────────────────────────────── */
+
+.spotlight-card {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    110deg,
+    rgba(15, 23, 42, 0.55),
+    rgba(30, 10, 60, 0.45) 60%,
+    rgba(60, 20, 10, 0.4)
+  );
+}
+
+/* ─── 3D Tilt reason cards ────────────────────────────────────────── */
+
+.tilt-card {
+  position: relative;
+  will-change: transform;
+  transition: box-shadow 0.25s ease;
+}
+
+.tilt-card:hover {
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.shine-overlay {
+  z-index: 10;
+  pointer-events: none;
+}
+
+.reason-card {
+  cursor: default;
+  position: relative;
+  min-height: 11rem;
+  background: rgba(6, 10, 22, 0.3);
+}
+
+/* ─── Scroll to top button ────────────────────────────────────────── */
+
+.scroll-top-btn {
+  background: linear-gradient(135deg, rgba(30, 10, 60, 0.85), rgba(10, 20, 50, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.scroll-top-btn:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* ─── Element theme overrides ─────────────────────────────────────── */
+
+.element-air .scroll-meter {
+  background: linear-gradient(90deg, #bae6fd, #e0f2fe, #ffffff);
+}
+
+.element-water .scroll-meter {
+  background: linear-gradient(90deg, #2dd4bf, #38bdf8, #7dd3fc);
+}
+
+.element-fire .scroll-meter {
+  background: linear-gradient(90deg, #fb923c, #f87171, #fbbf24);
+}
+
+.element-earth .scroll-meter {
+  background: linear-gradient(90deg, #86efac, #a3e635, #34d399);
 }
